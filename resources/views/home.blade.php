@@ -18,12 +18,12 @@
         <div class="card border-0 shadow-sm">
             <div class="card-body">
                 <h2 class="h5 mb-3">Menu Utama</h2>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">• Lihat semua produk</li>
-                    <li class="list-group-item">• Tambah produk baru</li>
-                    <li class="list-group-item">• Edit dan hapus produk</li>
-                    <li class="list-group-item">• Detail informasi HP</li>
-                </ul>
+                <div class="list-group list-group-flush">
+                    <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">• Lihat semua produk</a>
+                    <a href="{{ route('products.create') }}" class="list-group-item list-group-item-action">• Tambah produk baru</a>
+                    <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">• Edit dan hapus produk</a>
+                    <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">• Detail informasi HP</a>
+                </div>
             </div>
         </div>
     </div>

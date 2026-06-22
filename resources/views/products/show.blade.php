@@ -10,9 +10,23 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">Merk</dt>
-            <dd class="col-sm-9">{{ $product->brand?->brand_name }}</dd>
+        <div class="row mb-4">
+            <div class="col-md-4 text-center">
+                @if($product->image)
+                    @php
+                        $imageUrl = preg_match('/^https?:\/\//', $product->image) ? $product->image : asset('storage/' . $product->image);
+                    @endphp
+                    <img src="{{ $imageUrl }}" alt="{{ $product->model_name }}" class="img-fluid rounded">
+                @else
+                    <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height:220px;">
+                        <span class="text-muted">No image</span>
+                    </div>
+                @endif
+            </div>
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-3">Merk</dt>
+                    <dd class="col-sm-9">{{ $product->brand?->brand_name }}</dd>
 
             <dt class="col-sm-3">Model</dt>
             <dd class="col-sm-9">{{ $product->model_name }}</dd>
@@ -32,6 +46,8 @@
             <dt class="col-sm-3">Terakhir diperbarui</dt>
             <dd class="col-sm-9">-</dd>
         </dl>
+
+        </div>
 
         <div class="mt-4">
             <a href="{{ route('products.edit', $product) }}" class="btn btn-warning">Edit</a>
