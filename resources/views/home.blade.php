@@ -9,7 +9,11 @@
 
     <div class="d-flex justify-content-center gap-3 flex-wrap">
         <a href="{{ route('products.index') }}" class="btn btn-primary btn-lg">Daftar Produk</a>
-        <a href="{{ route('products.create') }}" class="btn btn-outline-secondary btn-lg">Tambah Produk</a>
+        @auth
+            @if(auth()->user()->role === 'admin')
+                <a href="{{ route('products.create') }}" class="btn btn-outline-secondary btn-lg">Tambah Produk</a>
+            @endif
+        @endauth
     </div>
 </div>
 
@@ -20,7 +24,11 @@
                 <h2 class="h5 mb-3">Menu Utama</h2>
                 <div class="list-group list-group-flush">
                     <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">• Lihat semua produk</a>
-                    <a href="{{ route('products.create') }}" class="list-group-item list-group-item-action">• Tambah produk baru</a>
+                    @auth
+                        @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('products.create') }}" class="list-group-item list-group-item-action">• Tambah produk baru</a>
+                        @endif
+                    @endauth
                     <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">• Edit dan hapus produk</a>
                     <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">• Detail informasi HP</a>
                 </div>

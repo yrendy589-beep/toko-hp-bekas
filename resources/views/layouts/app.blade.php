@@ -18,9 +18,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('products.index') }}">Produk</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('products.create') }}">Tambah Produk</a>
-                </li>
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('products.create') }}">Tambah Produk</a>
+                        </li>
+                    @endif
+                @endauth
                 @guest
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('login') }}">Login</a>
