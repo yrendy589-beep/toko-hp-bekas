@@ -19,7 +19,7 @@
 
                     <form action="{{ route('orders.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="product_id" value="{{ $product->product_id }}">
 
                         <div class="mb-3">
                             <label class="form-label">Jumlah</label>
@@ -27,9 +27,23 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Unggah Bukti Pembayaran (opsional)</label>
-                            <input type="file" name="payment_proof" class="form-control">
-                            <div class="form-text">JPG, PNG, atau PDF, max 5MB.</div>
+                            <label class="form-label">Metode Pembayaran</label>
+                            <select name="payment_method" class="form-select @error('payment_method') is-invalid @enderror">
+                                <option value="cash" {{ old('payment_method') === 'cash' ? 'selected' : '' }}>Cash</option>
+                                <option value="transfer" {{ old('payment_method') === 'transfer' ? 'selected' : '' }}>Transfer</option>
+                            </select>
+                            @error('payment_method')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Unggah Bukti Transfer</label>
+                            <input type="file" name="payment_proof" class="form-control @error('payment_proof') is-invalid @enderror">
+                            @error('payment_proof')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">Bisa file apa saja, termasuk PNG. Tidak ada batasan ukuran.</div>
                         </div>
 
                         <button class="btn btn-primary">Bayar / Submit Order</button>

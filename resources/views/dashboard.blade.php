@@ -19,6 +19,8 @@
                     <a href="{{ route('products.index') }}" class="btn btn-primary">Lihat Produk</a>
                     @if(auth()->user()->role === 'admin')
                         <a href="{{ route('products.create') }}" class="btn btn-success">Tambah Produk</a>
+                    @else
+                        <a href="{{ route('orders.index') }}" class="btn btn-success">Pesanan Saya</a>
                     @endif
                 </div>
             </div>

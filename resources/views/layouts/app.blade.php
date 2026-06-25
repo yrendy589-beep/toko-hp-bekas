@@ -23,6 +23,10 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('products.create') }}">Tambah Produk</a>
                         </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('orders.index') }}">Pesanan</a>
+                        </li>
                     @endif
                 @endauth
                 @guest
