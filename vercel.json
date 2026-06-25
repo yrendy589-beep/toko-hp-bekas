@@ -1,8 +1,9 @@
 {
-    "version": 2,
-    "builds": [
-        { "src": "composer.json", "use": "@vercel/php" },
-        { "src": "package.json", "use": "@vercel/static-build" }
-    ],
-    "routes": [{ "src": "/(.*)", "dest": "/public/index.php" }]
+  "version": 2,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/public/index.php"
+    }
+  ]
 }
