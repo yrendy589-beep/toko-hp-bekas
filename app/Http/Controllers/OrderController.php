@@ -40,7 +40,7 @@ class OrderController extends Controller
             'customer_id' => $customer->customer_id,
             'order_date' => now()->toDateString(),
             'total_amount' => $total,
-            'status' => 'waiting_verification',
+            'status' => 'pending',
         ];
 
         if (Schema::hasColumn('orders', 'payment_method')) {

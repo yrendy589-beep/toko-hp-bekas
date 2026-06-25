@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -19,12 +20,10 @@ return new class extends Migration {
             });
         }
 
-        // Expand enum status support with new values if the column exists and uses enum
-        Schema::table('orders', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'paid', 'shipped', 'completed', 'cancelled', 'waiting_verification', 'verified'])
-                  ->default('waiting_verification')
-                  ->change();
-        });
+        // Expand enum status support with new values if the column exists
+        if (Schema::hasColumn('orders', 'status')) {
+            DB::statement("ALTER TABLE `orders` MODIFY `status` ENUM('pending','paid','shipped','completed','cancelled','waiting_verification','verified') NOT NULL DEFAULT 'waiting_verification'");
+        }
     }
 
     public function down()
@@ -32,10 +31,8 @@ return new class extends Migration {
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn(['payment_method', 'payment_proof_path']);
         });
-        Schema::table('orders', function (Blueprint $table) {
-            $table->enum('status', ['pending','paid','shipped','completed','cancelled'])
-                  ->default('pending')
-                  ->change();
-        });
+        if (Schema::hasColumn('orders', 'status')) {
+            DB::statement("ALTER TABLE `orders` MODIFY `status` ENUM('pending','paid','shipped','completed','cancelled') NOT NULL DEFAULT 'pending'");
+        }
     }
 };

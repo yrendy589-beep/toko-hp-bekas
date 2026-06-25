@@ -21,6 +21,9 @@
                 @auth
                     @if(auth()->user()->role === 'admin')
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.orders.index') }}">Pesanan</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('products.create') }}">Tambah Produk</a>
                         </li>
                     @else

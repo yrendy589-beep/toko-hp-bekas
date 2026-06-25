@@ -26,6 +26,7 @@
                     <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">• Lihat semua produk</a>
                     @auth
                         @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('admin.orders.index') }}" class="list-group-item list-group-item-action">• Lihat semua pesanan</a>
                             <a href="{{ route('products.create') }}" class="list-group-item list-group-item-action">• Tambah produk baru</a>
                         @endif
                     @endauth

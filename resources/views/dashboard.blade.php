@@ -11,14 +11,15 @@
                 <h5>Halo, {{ auth()->user()->name }}!</h5>
                 <p>Anda masuk sebagai <strong>{{ ucfirst(auth()->user()->role) }}</strong>.</p>
                 @if(auth()->user()->role === 'admin')
-                    <p>Sebagai admin, Anda bisa mengelola produk dan melihat daftar produk.</p>
+                    <p>Sebagai admin, Anda bisa mengelola produk, melihat pesanan customer, dan memverifikasi pesanan.</p>
                 @else
                     <p>Sebagai customer, Anda bisa melihat daftar produk dan melakukan browsing.</p>
                 @endif
                 <div class="mt-4">
                     <a href="{{ route('products.index') }}" class="btn btn-primary">Lihat Produk</a>
                     @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('products.create') }}" class="btn btn-success">Tambah Produk</a>
+                        <a href="{{ route('admin.orders.index') }}" class="btn btn-success">Daftar Pesanan</a>
+                        <a href="{{ route('products.create') }}" class="btn btn-outline-secondary">Tambah Produk</a>
                     @else
                         <a href="{{ route('orders.index') }}" class="btn btn-success">Pesanan Saya</a>
                     @endif
