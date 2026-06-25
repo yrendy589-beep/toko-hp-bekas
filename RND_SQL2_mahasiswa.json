@@ -1,0 +1,291 @@
+{
+    "judulProyek": "Toko HP - Sistem Manajemen Produk Penjualan Telepon Genggam",
+    "namaMahasiswa": "",
+    "nim": "",
+    "kelasSemester": "",
+    "dosenPengampu": "",
+    "institusi": "Politeknik Negeri Lampung",
+    "tglMulai": "2026-06-22",
+    "tglSelesai": "2026-06-23",
+    "latarBelakang": "Dalam era digital saat ini, toko-toko ritel telepon genggam memerlukan sistem manajemen inventaris yang efisien untuk mengelola stok produk, informasi brand, dan detail spesifikasi HP. Sistem ini dirancang untuk memudahkan pengusaha toko HP dalam mencatat, memperbarui, dan mengelola data produk dengan antarmuka yang user-friendly.",
+    "rumusanMasalah": "Bagaimana cara membuat sistem manajemen produk penjualan telepon genggam yang dapat menampilkan daftar produk, menambah produk baru, mengubah informasi produk, dan menghapus produk yang sudah tidak dijual dengan efisien?",
+    "tujuanProyek": "Membuat aplikasi web berbasis Laravel untuk mengelola data produk telepon genggam dengan fitur lengkap CRUD (Create, Read, Update, Delete) yang terintegrasi dengan sistem manajemen brand dan pencarian produk.",
+    "lingkupDikerjakan": "1. Membuat database dengan tabel brands dan products\n2. Membuat model dan migration Laravel\n3. Membuat controller dengan operasi CRUD\n4. Membuat views untuk menampilkan, menambah, mengedit, dan menghapus produk\n5. Mengimplementasikan fitur pencarian dan pagination\n6. Mengimplementasikan fitur bulk delete\n7. Menambahkan validasi form\n8. Mengintegrasikan upload gambar untuk produk",
+    "lingkupTidak": "1. Sistem autentikasi dan manajemen user\n2. Sistem pembayaran dan transaksi\n3. Laporan penjualan dan analytics\n4. API integration dengan sistem lain\n5. Fitur notifikasi dan email\n6. Mobile app version",
+    "targetUser": "Pemilik toko HP, manager toko, atau staff yang bertanggung jawab atas manajemen inventaris dan data produk.",
+    "manfaat": "1. Memudahkan pengelolaan data produk secara terpusat\n2. Meningkatkan efisiensi dalam pencatatan stok barang\n3. Memudahkan pencarian produk berdasarkan nama atau brand\n4. Mengurangi kesalahan dalam data entry manual\n5. Menyediakan interface yang user-friendly untuk operasi CRUD\n6. Memudahkan bulk operation (hapus multiple produk sekaligus)",
+    "techStackDetail": "Backend: Laravel 13.8 (PHP Framework), PHP 8.3\nDatabase: SQLite/MySQL dengan Eloquent ORM\nFrontend: Blade Template Engine, Bootstrap 5, CSS, JavaScript\nBuild Tool: Vite.js\nDependency Manager: Composer (PHP), npm (JavaScript)\nTesting: PHPUnit 12.5.12\nLinting: Laravel Pint 1.27\nCode Quality: Mockery 1.6, Collision 8.6",
+    "folderStructureDetail": "app/\n  ├── Http/\n  │   └── Controllers/\n  │       ├── Controller.php (base controller)\n  │       └── ProductController.php (CRUD operations)\n  ├── Models/\n  │   ├── Brand.php (Brand model dengan relation to products)\n  │   ├── Product.php (Product model dengan relation to brand)\n  │   └── User.php (User model)\n  ├── Providers/\n  │   └── AppServiceProvider.php\ndatabase/\n  ├── migrations/\n  │   ├── 2026_06_22_000001_create_brands_table.php\n  │   ├── 2026_06_22_000002_create_products_table.php\n  │   └── 2026_06_22_000003_add_image_to_products_table.php\n  ├── seeders/\n  │   └── DatabaseSeeder.php\n  └── factories/\n      └── UserFactory.php\nresources/\n  ├── css/\n  │   └── app.css\n  ├── js/\n  │   └── app.js\n  └── views/\n      ├── home.blade.php (landing page)\n      ├── layouts/\n      │   └── app.blade.php (main layout)\n      ├── partials/\n      └── products/\n          ├── index.blade.php (list all products)\n          ├── create.blade.php (form tambah produk)\n          ├── edit.blade.php (form edit produk)\n          └── show.blade.php (detail produk)\nroutes/\n  ├── web.php (web routes)\n  └── console.php (console routes)\nconfig/\n  ├── app.php\n  ├── database.php\n  ├── filesystems.php\n  ├── session.php\n  ├── cache.php\n  └── [config lainnya]",
+    "userFlow": "1. User membuka aplikasi di halaman home (route: /)\n2. User dapat memilih untuk lihat daftar produk atau tambah produk baru\n3. Di halaman index produk (route: /products):\n   - User dapat melihat list produk dengan pagination (12 per halaman)\n   - User dapat mencari produk berdasarkan model name atau brand name\n   - User dapat melihat detail produk dengan klik tombol view\n   - User dapat mengedit produk dengan klik tombol edit\n   - User dapat menghapus produk dengan klik tombol delete\n   - User dapat melakukan bulk delete dengan select multiple checkbox\n4. Di halaman create/edit:\n   - User mengisi form dengan data produk (model name, brand, price, stock, release year, image)\n   - User dapat memilih brand existing atau membuat brand baru\n   - User dapat upload gambar atau memberikan URL gambar\n   - Data divalidasi sebelum disimpan\n5. Setelah operasi (create/update/delete), user di-redirect ke index dengan pesan sukses",
+    "routingTable": "GET  /                            → Tampilkan halaman home\nGET  /products                   → Tampilkan list semua produk dengan search & pagination\nGET  /products/create            → Tampilkan form tambah produk baru\nPOST /products                   → Simpan produk baru ke database\nGET  /products/{id}              → Tampilkan detail produk\nGET  /products/{id}/edit         → Tampilkan form edit produk\nPUT  /products/{id}              → Update data produk\nDELETE /products/{id}            → Hapus produk\nDELETE /products/bulk-delete     → Hapus multiple produk sekaligus",
+    "codeCreate": "// ProductController::store() method\n$validated = $request->validate([\n    'brand_id' => 'nullable|integer|exists:brands,brand_id|required_without:brand_name',\n    'brand_name' => 'nullable|string|max:150|required_without:brand_id',\n    'model_name' => 'required|string|max:150',\n    'price' => 'required|numeric|min:0',\n    'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',\n    'image_url' => 'nullable|url|max:1000',\n    'stock' => 'required|integer|min:0',\n    'release_year' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),\n]);\n\n// Create new brand jika tidak ada\nif (!empty($validated['brand_name'])) {\n    $brand = Brand::firstOrCreate(['brand_name' => $validated['brand_name']]);\n    $validated['brand_id'] = $brand->brand_id;\n}\n\n// Handle image upload\nif ($request->hasFile('image')) {\n    $validated['image'] = $request->file('image')->store('product-images', 'public');\n}\n\nProduct::create($validated);",
+    "codeRead": "// ProductController::index() method - dengan search dan pagination\npublic function index(Request $request)\n{\n    $search = $request->query('search');\n\n    $products = Product::with('brand')\n        ->when($search, function ($query, $search) {\n            $query->where('model_name', 'like', \"%{$search}%\")\n                ->orWhereHas('brand', function ($query) use ($search) {\n                    $query->where('brand_name', 'like', \"%{$search}%\");\n                });\n        })\n        ->latest('product_id')\n        ->paginate(12)\n        ->withQueryString();\n\n    return view('products.index', compact('products', 'search'));\n}\n\n// ProductController::show() method\npublic function show(Product $product)\n{\n    $product->load('brand');\n    return view('products.show', compact('product'));\n}",
+    "codeUpdate": "// ProductController::update() method\npublic function update(Request $request, Product $product)\n{\n    $validated = $request->validate([\n        'brand_id' => 'nullable|integer|exists:brands,brand_id|required_without:brand_name',\n        'brand_name' => 'nullable|string|max:150|required_without:brand_id',\n        'model_name' => 'required|string|max:150',\n        'price' => 'required|numeric|min:0',\n        'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',\n        'image_url' => 'nullable|url|max:1000',\n        'stock' => 'required|integer|min:0',\n        'release_year' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),\n    ]);\n\n    if (!empty($validated['brand_name'])) {\n        $brand = Brand::firstOrCreate(['brand_name' => $validated['brand_name']]);\n        $validated['brand_id'] = $brand->brand_id;\n    }\n\n    if ($request->hasFile('image')) {\n        $validated['image'] = $request->file('image')->store('product-images', 'public');\n    }\n\n    $product->update($validated);\n    return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');\n}",
+    "codeDelete": "// ProductController::destroy() method\npublic function destroy(Product $product)\n{\n    $product->delete();\n    return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');\n}\n\n// ProductController::bulkDelete() method\npublic function bulkDelete(Request $request)\n{\n    $validated = $request->validate([\n        'selected_products' => 'required|array|min:1',\n        'selected_products.*' => 'integer|distinct|exists:products,product_id',\n    ]);\n\n    Product::whereIn('product_id', $validated['selected_products'])->delete();\n    return redirect()->route('products.index')->with('success', 'Produk terpilih berhasil dihapus.');\n}",
+    "metodeHosting": "Hosting Gratis (000webhost / InfinityFree)",
+    "urlHosting": "",
+    "langkahDeploy": "1. Daftarkan akun di InfinityFree atau 000webhost\n2. Buat database MySQL baru di control panel\n3. Upload file project ke folder public_html menggunakan FTP\n4. Konfigurasi file .env dengan database credentials dari hosting\n5. Jalankan migration: php artisan migrate --force\n6. Setting permission untuk folder storage dan bootstrap/cache\n7. Akses aplikasi melalui URL yang disediakan hosting",
+    "konfigChange": "File .env:\nAPP_NAME=TokoHP\nAPP_DEBUG=false\nAPP_URL=https://tokoHP.infinityfree.com\nDB_CONNECTION=mysql\nDB_HOST=localhost\nDB_PORT=3306\nDB_DATABASE=[database_name_dari_hosting]\nDB_USERNAME=[username_hosting]\nDB_PASSWORD=[password_hosting]",
+    "ringkasanPengujian": "Pengujian dilakukan dengan test cases berikut:\n1. Create Product: Menambah data produk baru dan verifikasi muncul di list\n2. Read Product: Membuka halaman products dan verifikasi list menampilkan data\n3. Update Product: Mengubah data produk dan verifikasi perubahan tersimpan\n4. Delete Product: Menghapus satu produk dan verifikasi terhapus dari sistem\n5. Bulk Delete: Menghapus multiple produk sekaligus\n6. Search Functionality: Mencari produk berdasarkan model name dan brand\n7. Pagination: Navigasi antar halaman dengan limit 12 produk per halaman\n8. Image Upload: Upload image untuk produk dan verifikasi tersimpan\n9. Validation: Input data yang salah dan verifikasi sistem menolak",
+    "kendalaSolusiPengujian": "Kendala 1: Image tidak ter-upload dengan benar\nSolusi: Pastikan folder storage/app/public/product-images ada dan permission sudah diatur 755\n\nKendala 2: Pagination tidak bekerja dengan search\nSolusi: Gunakan withQueryString() agar parameter search tetap ada di URL pagination\n\nKendala 3: Bulk delete tidak menghapus semua yang dipilih\nSolusi: Pastikan checkbox name sudah benar 'selected_products[]' dan value adalah product_id",
+    "kesimpulanPengujian": "Aplikasi Toko HP telah berhasil di-test dan semua fitur CRUD (Create, Read, Update, Delete) berfungsi dengan baik. Fitur pencarian, pagination, bulk delete, dan validasi form juga berfungsi sesuai dengan harapan. Image upload berhasil tersimpan di folder storage publik.",
+    "kesimpulan": "Telah berhasil mengembangkan aplikasi Toko HP menggunakan Laravel 13.8 dengan fitur lengkap manajemen produk. Aplikasi ini dapat digunakan oleh pemilik toko HP untuk mengelola inventaris produk secara efisien. Sistem database dengan relasi brands-products memberikan fleksibilitas dalam pengelolaan data. Interface yang user-friendly membuat aplikasi mudah digunakan oleh non-technical users.",
+    "saran": "1. Tambahkan fitur kategori produk untuk organisasi yang lebih baik\n2. Implementasi sistem autentikasi untuk multi-user access\n3. Tambahkan laporan stok dan alert ketika stok minimum\n4. Integrasi dengan WhatsApp Business API untuk notifikasi\n5. Tambahkan fitur export data ke Excel dan PDF\n6. Implementasi barcode system untuk scanning produk\n7. Tambahkan fitur review dan rating dari customer",
+    "lampiranSQL": "-- DDL untuk tabel Brands\nCREATE TABLE brands (\n  brand_id INT PRIMARY KEY AUTO_INCREMENT,\n  brand_name VARCHAR(100) NOT NULL UNIQUE\n);\n\n-- DDL untuk tabel Products\nCREATE TABLE products (\n  product_id INT PRIMARY KEY AUTO_INCREMENT,\n  brand_id INT NOT NULL,\n  model_name VARCHAR(150) NOT NULL,\n  price DECIMAL(12, 2) NOT NULL,\n  image VARCHAR(255) NULL,\n  stock INT DEFAULT 0 NOT NULL,\n  release_year YEAR NULL,\n  FOREIGN KEY (brand_id) REFERENCES brands(brand_id) ON DELETE CASCADE\n);\n\n-- DML - Sample Data untuk Brands\nINSERT INTO brands (brand_name) VALUES \n('Apple'),\n('Samsung'),\n('Xiaomi'),\n('OPPO'),\n('Vivo'),\n('Realme'),\n('Motorola'),\n('OnePlus');\n\n-- DML - Sample Data untuk Products\nINSERT INTO products (brand_id, model_name, price, stock, release_year) VALUES \n(1, 'iPhone 15 Pro', 15999000, 15, 2023),\n(1, 'iPhone 15', 12999000, 20, 2023),\n(2, 'Samsung Galaxy S24', 14999000, 10, 2024),\n(2, 'Samsung Galaxy A54', 6999000, 25, 2023),\n(3, 'Xiaomi 14', 7999000, 18, 2024),\n(3, 'Xiaomi 13T', 5999000, 22, 2023),\n(4, 'OPPO A78 5G', 3999000, 30, 2023),\n(4, 'OPPO Reno 11', 8999000, 14, 2024),\n(5, 'Vivo X100', 9999000, 12, 2024),\n(5, 'Vivo Y36', 2999000, 35, 2023),\n(6, 'Realme 12 Pro', 6999000, 16, 2024),\n(6, 'Realme 11', 3999000, 28, 2023),\n(7, 'Motorola Edge 50', 7999000, 11, 2024),\n(7, 'Motorola G54', 3499000, 32, 2024),\n(8, 'OnePlus 12', 7999000, 9, 2024),\n(8, 'OnePlus Nord CE 4', 4999000, 19, 2024);",
+    "githubRepo": "",
+    "videoLink": "",
+    "referensi": "1. Laravel Official Documentation - https://laravel.com/docs\n2. Laravel Eloquent ORM Guide - https://laravel.com/docs/eloquent\n3. Bootstrap 5 Documentation - https://getbootstrap.com/docs/5.0\n4. Vite.js Documentation - https://vitejs.dev\n5. PHP Official Documentation - https://www.php.net/docs.php\n6. MySQL Documentation - https://dev.mysql.com/doc",
+    "pernyataanAI": "",
+    "__schemas": [
+        {
+            "nama": "brands",
+            "kolom": [
+                {
+                    "nama": "brand_id",
+                    "tipe": "INT",
+                    "isPK": true,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "brand_name",
+                    "tipe": "VARCHAR(100)",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                }
+            ]
+        },
+        {
+            "nama": "products",
+            "kolom": [
+                {
+                    "nama": "product_id",
+                    "tipe": "INT",
+                    "isPK": true,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "brand_id",
+                    "tipe": "INT",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "brands",
+                    "refCol": "brand_id"
+                },
+                {
+                    "nama": "model_name",
+                    "tipe": "VARCHAR(150)",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "price",
+                    "tipe": "DECIMAL(12,2)",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "image",
+                    "tipe": "VARCHAR(255)",
+                    "isPK": false,
+                    "isNotNull": false,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "stock",
+                    "tipe": "INT",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "release_year",
+                    "tipe": "YEAR",
+                    "isPK": false,
+                    "isNotNull": false,
+                    "refTable": "",
+                    "refCol": ""
+                }
+            ]
+        },
+        {
+            "nama": "customers",
+            "kolom": [
+                {
+                    "nama": "customer_id",
+                    "tipe": "INT",
+                    "isPK": true,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "name",
+                    "tipe": "VARCHAR(150)",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "phone",
+                    "tipe": "VARCHAR(30)",
+                    "isPK": false,
+                    "isNotNull": false,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "email",
+                    "tipe": "VARCHAR(150)",
+                    "isPK": false,
+                    "isNotNull": false,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "address",
+                    "tipe": "TEXT",
+                    "isPK": false,
+                    "isNotNull": false,
+                    "refTable": "",
+                    "refCol": ""
+                }
+            ]
+        },
+        {
+            "nama": "orders",
+            "kolom": [
+                {
+                    "nama": "order_id",
+                    "tipe": "INT",
+                    "isPK": true,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "customer_id",
+                    "tipe": "INT",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "customers",
+                    "refCol": "customer_id"
+                },
+                {
+                    "nama": "order_date",
+                    "tipe": "DATE",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "total_amount",
+                    "tipe": "DECIMAL(14,2)",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "status",
+                    "tipe": "ENUM('pending','paid','shipped','completed','cancelled')",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                }
+            ]
+        },
+        {
+            "nama": "order_items",
+            "kolom": [
+                {
+                    "nama": "order_item_id",
+                    "tipe": "INT",
+                    "isPK": true,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "order_id",
+                    "tipe": "INT",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "orders",
+                    "refCol": "order_id"
+                },
+                {
+                    "nama": "product_id",
+                    "tipe": "INT",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "products",
+                    "refCol": "product_id"
+                },
+                {
+                    "nama": "quantity",
+                    "tipe": "INT",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                },
+                {
+                    "nama": "price",
+                    "tipe": "DECIMAL(12,2)",
+                    "isPK": false,
+                    "isNotNull": true,
+                    "refTable": "",
+                    "refCol": ""
+                }
+            ]
+        }
+    ],
+    "__mockup": [],
+    "__screenshot": [],
+    "__testCases": [
+        {
+            "id": 1,
+            "skenario": "Tambah data baru",
+            "hasilDiharapkan": "Data tersimpan & muncul di tabel",
+            "status": "Berhasil",
+            "buktiGambar": []
+        },
+        {
+            "id": 2,
+            "skenario": "Edit data",
+            "hasilDiharapkan": "Perubahan tampil pada list",
+            "status": "Berhasil",
+            "buktiGambar": []
+        },
+        {
+            "id": 3,
+            "skenario": "Hapus data",
+            "hasilDiharapkan": "Data terhapus dari sistem",
+            "status": "Berhasil",
+            "buktiGambar": []
+        },
+        {
+            "id": 4,
+            "skenario": "Validasi input salah",
+            "hasilDiharapkan": "Sistem menolak & menampilkan error",
+            "status": "Berhasil",
+            "buktiGambar": []
+        }
+    ],
+    "__nextTestCaseId": 5
+}

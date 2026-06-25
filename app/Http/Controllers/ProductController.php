@@ -8,6 +8,16 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
+    private function authorizeAdmin(): void
+    {
+        abort_if(auth()->user()->role !== 'admin', 403);
+    }
+
     public function index(Request $request)
     {
         $search = $request->query('search');
@@ -28,6 +38,8 @@ class ProductController extends Controller
 
     public function create()
     {
+        $this->authorizeAdmin();
+
         $brands = Brand::orderBy('brand_name')->get();
 
         return view('products.create', compact('brands'));
@@ -35,6 +47,8 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
+
         $validated = $request->validate([
             'brand_id' => 'nullable|integer|exists:brands,brand_id|required_without:brand_name',
             'brand_name' => 'nullable|string|max:150|required_without:brand_id',
@@ -75,6 +89,8 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $this->authorizeAdmin();
+
         $brands = Brand::orderBy('brand_name')->get();
 
         return view('products.edit', compact('product', 'brands'));
@@ -82,6 +98,8 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        $this->authorizeAdmin();
+
         $validated = $request->validate([
             'brand_id' => 'nullable|integer|exists:brands,brand_id|required_without:brand_name',
             'brand_name' => 'nullable|string|max:150|required_without:brand_id',
@@ -115,6 +133,8 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        $this->authorizeAdmin();
+
         $product->delete();
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
@@ -122,6 +142,8 @@ class ProductController extends Controller
 
     public function bulkDelete(Request $request)
     {
+        $this->authorizeAdmin();
+
         $validated = $request->validate([
             'selected_products' => 'required|array|min:1',
             'selected_products.*' => 'integer|distinct|exists:products,product_id',

@@ -1,0 +1,16 @@
+node_modules/
+vendor/
+storage/app/
+storage/framework/
+storage/logs/
+.env
+.env.*
+.vscode/
+.idea/
+tests/
+tests/**
+*.sql
+*.sqlite
+RND_SQL2_mahasiswa.json
+/.git
+/.github

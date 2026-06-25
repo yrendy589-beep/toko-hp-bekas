@@ -21,6 +21,24 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('products.create') }}">Tambah Produk</a>
                 </li>
+                @guest
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('register') }}">Register</a>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="nav-link btn btn-link text-decoration-none">Logout</button>
+                        </form>
+                    </li>
+                @endguest
             </ul>
         </div>
     </div>
