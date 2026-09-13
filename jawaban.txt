@@ -1,0 +1,101 @@
+1. Semua tabel di database aplikasi saya:
+- users
+- password_reset_tokens
+- sessions
+- cache
+- cache_locks
+- jobs
+- failed_jobs
+- job_batches
+- migrations
+- brands
+- products
+- customers
+- orders
+- order_items
+
+2. CREATE TABLE untuk tabel master penting (products):
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    brand_id INT NOT NULL,
+    model_name VARCHAR(150) NOT NULL,
+    price DECIMAL(12,2) NOT NULL,
+    image VARCHAR(255) NULL,
+    stock INT NOT NULL DEFAULT 0,
+    release_year YEAR NULL,
+    CONSTRAINT fk_products_brand FOREIGN KEY (brand_id) REFERENCES brands(brand_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+3. CREATE TABLE untuk tabel transaksi/junction (order_items):
+CREATE TABLE order_items (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(12,2) NOT NULL,
+    CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(product_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+Soal 11 - INSERT:
+1. Contoh 3 query INSERT ke tabel master products:
+INSERT INTO products (product_id, brand_id, model_name, price, stock, release_year) VALUES (1, 1, 'Galaxy A54', 4999999.00, 25, 2024);
+INSERT INTO products (product_id, brand_id, model_name, price, stock, release_year) VALUES (2, 1, 'Galaxy S24', 14999999.00, 10, 2024);
+INSERT INTO products (product_id, brand_id, model_name, price, stock, release_year) VALUES (3, 2, 'iPhone 15', 23999999.00, 8, 2024);
+
+2. Validasi input sebelum INSERT di aplikasi saya:
+- ProductController menggunakan $request->validate() untuk memeriksa model_name, price, stock, release_year, brand_id/brand_name, tipe file image, dan ukuran file.
+- OrderController menggunakan $request->validate() untuk memeriksa product_id exists, quantity integer minimal 1, payment_method in:cash,transfer, dan payment_proof required jika transfer.
+- Duplikasi brand dicegah dengan Brand::firstOrCreate(['brand_name' => $validated['brand_name']]).
+
+3. SELECT untuk memverifikasi data yang baru di-INSERT:
+SELECT product_id, brand_id, model_name, price, stock, release_year FROM products WHERE model_name IN ('Galaxy A54', 'Galaxy S24', 'iPhone 15');
+
+Soal 12 - SELECT & JOIN:
+SELECT o.order_id,
+       c.name AS customer_name,
+       p.model_name,
+       oi.quantity,
+       oi.price,
+       o.order_date,
+       o.status
+FROM order_items oi
+INNER JOIN orders o ON oi.order_id = o.order_id
+INNER JOIN products p ON oi.product_id = p.product_id
+INNER JOIN customers c ON o.customer_id = c.customer_id
+WHERE o.status = 'pending'
+ORDER BY o.order_date DESC;
+
+Query ini menampilkan daftar item pesanan yang masih pending, termasuk nama customer, nama produk, jumlah, harga, tanggal order, dan status. Di aplikasi, query seperti ini bisa digunakan untuk melihat order yang belum selesai atau untuk halaman admin/order detail.
+
+Soal 13 - UPDATE & DELETE:
+1. Transaksi UPDATE dua tabel sekaligus:
+BEGIN;
+UPDATE orders o
+INNER JOIN order_items oi ON oi.order_id = o.order_id
+SET o.status = 'verified', oi.price = oi.price * 0.95
+WHERE o.order_id = 1;
+COMMIT;
+
+2. DELETE dengan JOIN untuk menghapus data terkait:
+DELETE o, oi
+FROM orders o
+INNER JOIN order_items oi ON oi.order_id = o.order_id
+WHERE o.order_id = 2;
+
+3. Penanganan kesalahan saat UPDATE/DELETE di aplikasi:
+- Aplikasi menggunakan auth middleware dan abort_if() untuk menolak akses jika bukan admin atau pemilik data.
+- Sebelum operasi, aplikasi memvalidasi input dengan $request->validate() sehingga data salah atau tidak lengkap ditolak lebih awal.
+- Jika terjadi error saat operasi basis data, Laravel dapat membatalkan transaksi dan menampilkan error melalui exception handler. Untuk operasi penting, sebaiknya gunakan DB::beginTransaction() / DB::commit() / DB::rollBack() agar rollback terjadi jika gagal.
+
+Soal 14 - Evaluasi project:
+1. Fitur paling kompleks: proses order checkout dan verifikasi pembayaran. Karena fitur ini menggabungkan beberapa tabel dan alur: customer dibuat atau dicari berdasarkan email user, produk diambil dari product_id, order dibuat, order item dibuat, dan admin harus memverifikasi status order.
+2. Tiga kendala dan solusi:
+- Kendala 1: sinkronisasi data customer dengan user login. Solusi: Customer::firstOrCreate(['email' => $user->email], [...]) agar customer selalu terhubung ke user.
+- Kendala 2: validasi input create/update produk dan upload gambar. Solusi: gunakan $request->validate() dengan rule required, numeric, exists, image, mimes, max.
+- Kendala 3: perubahan skema order (payment_method, payment_proof_path) setelah fitur awal dibuat. Solusi: gunakan migration terpisah untuk menambah kolom dan cek Schema::hasColumn() saat runtime.
+3. Jika dikerjakan ulang, yang akan saya perbaiki/tambahkan:
+- Tambahkan migration resmi untuk tabel customers dan order_items agar schema konsisten dengan model.
+- Tambahkan DB transaction di proses checkout/order untuk menjaga konsistensi data saat insert order dan order item.
+- Tambahkan unit test/feature test untuk CRUD produk dan order serta validasi input.
+- Tambahkan fitur pelacakan status pesanan yang lebih lengkap dan integrasi pembayaran online.
